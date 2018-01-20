@@ -5,20 +5,19 @@ import org.usfirst.frc.team293.robot.Robot;
 import org.usfirst.frc.team293.robot.RobotMap;
 import org.usfirst.frc.team293.robot.commands.runContinuousFunctions;
 
-import com.ctre.PigeonImu;
+import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.buttons.Trigger;
 
-public class ContinuousFunctions extends Subsystem {
+public class continuousFunctions extends Subsystem {
 	public boolean hasGear = false;
 	public int isAligned = 0;
 	
 	public PowerDistributionPanel pdp;
 	
-	public ContinuousFunctions(){
+	public continuousFunctions(){
 		pdp= new PowerDistributionPanel(4);
 
 	}
@@ -31,9 +30,9 @@ public class ContinuousFunctions extends Subsystem {
     	SmartDashboard.putNumber("Encoder Rate right", Robot.driveTrain.rightEncoder.getRate());
 		SmartDashboard.putNumber("Encoder Rate left", Robot.driveTrain.leftEncoder.getRate());
 		SmartDashboard.putBoolean("Gear Optical Limit", Robot.gearPouch.hasGear.get());
-    	PigeonImu.FusionStatus fusionStatus = new PigeonImu.FusionStatus();
+    	PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
 
-		SmartDashboard.putNumber("IMU", Robot.driveTrain.imu.GetFusedHeading(fusionStatus));
+		SmartDashboard.putNumber("IMU", Robot.driveTrain.imu.getFusedHeading(fusionStatus));
 	}
 	
 	public void buttonsLED(){

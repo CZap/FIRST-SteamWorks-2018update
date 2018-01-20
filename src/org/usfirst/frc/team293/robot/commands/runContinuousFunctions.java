@@ -2,7 +2,7 @@ package org.usfirst.frc.team293.robot.commands;
 
 import org.usfirst.frc.team293.robot.Robot;
 import org.usfirst.frc.team293.robot.subsystems.LEDs;
-import org.usfirst.frc.team293.robot.subsystems.ContinuousFunctions;
+import org.usfirst.frc.team293.robot.subsystems.continuousFunctions;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -10,15 +10,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class runContinuousFunctions extends Command {
 
 	public runContinuousFunctions(){
-		requires(Robot.ContinuousFunctions);
+		requires(Robot.continuousFunctions);
 	}
 	   protected void initialize() {
-	    	Robot.ContinuousFunctions.pdp.clearStickyFaults();
+	    	Robot.continuousFunctions.pdp.clearStickyFaults();
 	    }
 	protected void execute(){
-		Robot.ContinuousFunctions.currentMonitor();
-		Robot.ContinuousFunctions.sensorLog();
-		Robot.ContinuousFunctions.buttonsLED();
+		Robot.continuousFunctions.currentMonitor();
+		Robot.continuousFunctions.sensorLog();
+		Robot.continuousFunctions.buttonsLED();
 	}
 	
 	public void sendLEDCode(){

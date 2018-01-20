@@ -4,18 +4,18 @@ import org.usfirst.frc.team293.robot.Robot;
 import org.usfirst.frc.team293.robot.RobotMap;
 import org.usfirst.frc.team293.robot.commands.TankDriveDefault;
 
-import com.ctre.PigeonImu;
-import com.ctre.PigeonImu.PigeonState;
+import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -23,8 +23,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class DriveTrain extends Subsystem {
 	private SpeedController leftMotorOne, leftMotorTwo, leftMotorThree, rightMotorOne, rightMotorTwo, rightMotorThree;
 
-	public PigeonImu imu;
-	private RobotDrive drive;
+	public PigeonIMU imu;
+	private DifferentialDrive drive;
 	public Encoder leftEncoder, rightEncoder;
 	public boolean reverseDirection=false;
 	
@@ -47,13 +47,16 @@ public class DriveTrain extends Subsystem {
 	public DriveTrain(){	//make drivetrain stuff
 		leftMotorOne = new VictorSP(RobotMap.leftDrive[0]);
 		leftMotorTwo= new VictorSP(RobotMap.leftDrive[1]);
+		SpeedControllerGroup leftMotors = new SpeedControllerGroup(leftMotorOne, leftMotorTwo);
+		
 		rightMotorOne= new VictorSP(RobotMap.rightDrive[0]);
 		rightMotorTwo= new VictorSP(RobotMap.rightDrive[1]);
+		SpeedControllerGroup rightMotors = new SpeedControllerGroup(rightMotorOne, rightMotorTwo);
 		
-		imu=new PigeonImu(RobotMap.imu);
-    	imu.EnableTemperatureCompensation(true);
+		imu=new PigeonIMU(RobotMap.imu);
+    	//imu.EnableTemperatureCompensation(true);
     	
-		drive = new RobotDrive(leftMotorOne, leftMotorTwo, rightMotorOne, rightMotorTwo);	
+		drive = new DifferentialDrive(leftMotors, rightMotors);	
 		
 		leftEncoder= new Encoder(RobotMap.leftEncoder[0],RobotMap.leftEncoder[1]);	//creates encoder with fast sampling and true or false for direction
 		rightEncoder= new Encoder(RobotMap.rightEncoder[0],RobotMap.rightEncoder[1]);
@@ -100,8 +103,8 @@ public class DriveTrain extends Subsystem {
 //////////////////////////////Gyro Stuff-->>>///////////////////////////////////////////////
     
     public void velocityStraight(double speed){	///NOT DONE YET speed=-1,1 
-    	PigeonImu.FusionStatus fusionStatus = new PigeonImu.FusionStatus();
-    	angle=imu.GetFusedHeading(fusionStatus);
+    	PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
+    	angle=imu.getFusedHeading(fusionStatus);
      	
     	error=(angle-setpoint);
     	
@@ -117,8 +120,8 @@ public class DriveTrain extends Subsystem {
     }
     
     public void resetGyro(){
-    	imu.SetFusedHeading(0.0);
-    	imu.SetYaw(0);
+    	imu.setFusedHeading(0.0, 0);
+    	imu.setYaw(0, 0);
     	turning=false;
     	setpoint=0;
     	error=0;
@@ -126,10 +129,10 @@ public class DriveTrain extends Subsystem {
     }
     
     public void gyroStraight(double speed){
-    	PigeonImu.FusionStatus fusionStatus = new PigeonImu.FusionStatus();
-    	imuStatus = (imu.GetState() != PigeonState.NoComm);
+    	PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
+    	imuStatus = (imu.getState() != PigeonIMU.PigeonState.NoComm);
     	if (imuStatus){
-     	angle=imu.GetFusedHeading(fusionStatus);
+     	angle=imu.getFusedHeading(fusionStatus);
      	
     	error=(angle-setpoint);
         
@@ -143,8 +146,8 @@ public class DriveTrain extends Subsystem {
     }
 
     public boolean gyroTurn(double speed, double angle, double rate){
-    	PigeonImu.FusionStatus fusionStatus = new PigeonImu.FusionStatus();
-    	angle=imu.GetFusedHeading(fusionStatus);
+    	PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
+    	angle=imu.getFusedHeading(fusionStatus);
     	
     	setpoint+=rate;
     	error=(angle-setpoint);
@@ -161,8 +164,8 @@ public class DriveTrain extends Subsystem {
     
     public boolean gyroTurnInPlace(double setangle, double rate){
     	turning=false;
-    	PigeonImu.FusionStatus fusionStatus = new PigeonImu.FusionStatus();
-    	angle=imu.GetFusedHeading(fusionStatus); ///Gets the angle
+    	PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
+    	angle=imu.getFusedHeading(fusionStatus); ///Gets the angle
     	setpoint+=rate;  //adds the rate into the setpoint to gradually change it
     	error=(angle-setpoint); //finds how far you are off from the setpoint
         
